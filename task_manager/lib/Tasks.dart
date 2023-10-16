@@ -1,6 +1,7 @@
 // ignore_for_file: camel_case_types
 
 import 'package:flutter/material.dart';
+import 'package:task_manager/AddTask.dart';
 
 class taskListing extends StatefulWidget {
   const taskListing({super.key});
@@ -53,7 +54,7 @@ class _taskListingState extends State<taskListing> {
       floatingActionButton: FloatingActionButton(
         tooltip: 'Add Task',
         onPressed: () { 
-       
+          Navigator.push(context, MaterialPageRoute(builder: (context)=> const addTask()));
          },
         child: const Icon(Icons.add),
       ),
