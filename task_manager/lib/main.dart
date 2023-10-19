@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
        
       ),
       debugShowCheckedModeBanner: false,
-      home: const login(),
+      home: const Login(),
     );
   }
 }
