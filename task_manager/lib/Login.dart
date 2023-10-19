@@ -16,7 +16,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
   TextEditingController password = TextEditingController();
   bool isVisible = false;
   bool showSignup = false;
-
+  var _formkey=GlobalKey<FormState>();
   @override
   void initState() {
     super.initState();
@@ -35,22 +35,25 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [
-              Color.fromARGB(255, 255, 255, 255),
-              Color.fromARGB(255, 135, 201, 255),
-              Color.fromARGB(255, 203, 232, 255),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+      body: Form(
+        key: _formkey,
+        child: Container(
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [
+                Color.fromARGB(255, 255, 255, 255),
+                Color.fromARGB(255, 135, 201, 255),
+                Color.fromARGB(255, 203, 232, 255),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
           ),
-        ),
-        child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 500),
-          child: showSignup ? signupContainer() : loginContainer(),
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 500),
+            child: showSignup ? signupContainer() : loginContainer(),
+          ),
         ),
       ),
     );
@@ -208,20 +211,22 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
   Widget loginButton() {
     return InkWell(
       onTap: (){
-        if(showSignup)
-        {
-          print("Signup");
-        }
-        else{
-          print("Login");
-        }
+        
+            if(showSignup)
+            {
+              print("Signup");
+            }
+            else{
+              print("Login");
+            }
+        
       },
       child: Container(
                   alignment: Alignment.center,
                   height: 40,width: double.infinity,decoration: BoxDecoration(
                     color: Colors.black,borderRadius: BorderRadius.circular(10.0)
                   ),
-                  child: const Text("Login",style: TextStyle(color: Colors.white),),
+                  child: Text(showSignup?"Signup":"Login",style: TextStyle(color: Colors.white),),
                 ),
     );
   }
@@ -230,6 +235,12 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
     return SizedBox(
                 height: 45,
                 child: TextFormField(
+                  // validator: (value) {
+                  //    if(value==null || value.isEmpty) {
+                  //      return "Field Cannot be empty";
+                  //     }
+                  //     return null;
+                  // },
                   controller: userName,
                   style: const TextStyle(color: Colors.black, fontSize: 12.0,fontWeight: FontWeight.w400),
                   decoration: const InputDecoration(
@@ -253,6 +264,16 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
     return SizedBox(
                 height: 45,
                 child: TextFormField(
+                  // validator: (value) {
+                  //    if(value==null || value.isEmpty) {
+                  //      return "Field Cannot be empty";
+                  //     }
+                  //     else if(value.length<=7)
+                  //     {
+                  //     return "Password Must be at 8 Character Long";
+                  //     }
+                  //     return null;
+                  // },
                   obscureText: !isVisible,
                   obscuringCharacter: '.',
                   controller: password,
