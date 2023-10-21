@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:task_manager/Tasks.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -218,8 +219,8 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
             }
             else{
               print("Login");
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>const taskListing()));
             }
-        
       },
       child: Container(
                   alignment: Alignment.center,
