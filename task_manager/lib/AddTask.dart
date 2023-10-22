@@ -29,150 +29,203 @@ class _addTaskState extends State<addTask> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text("Add Task"),
-        centerTitle: true,
-      ),
       body: 
-       Padding(
-        padding: EdgeInsets.all(8.0),
-        child: Form(
-          key: _formkey,
-          child: Column(
-            children: [
-               TextFormField(
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Text Feild Cannot Empty";
-                    }
-                    return null;
-                 },
-                 controller: taskName,
-                decoration: const InputDecoration(
-                   alignLabelWithHint: true,
-                  labelText: "Enter Task Name",
-                  border:OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.deepPurple
-                    )  
-                  )
-                  
-                ),
-              ),
-            const  SizedBox(height: 20,),
-                TextFormField(
-                 validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Text Feild Cannot Empty";
-                    }
-                  return null;
-                 },
-                 controller: description,
-                textAlign: TextAlign.start,
-                maxLines: 3,
-                decoration: const InputDecoration(
-                  alignLabelWithHint: true,
-                  labelText: "Description",
-                  border:OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.deepPurple
-                    )  
-                  )
-                  
-                ),
-              ),
-            const  SizedBox(height: 20,),
-              TextFormField(
-               validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Date Must be Select";
-                  }
-                  return null;
-               },
-                controller: dateInput,
-                //editing controller of this TextField
-                decoration: const InputDecoration(
-                   alignLabelWithHint: true,
-                  labelText: "Select Due Date",
-                  border:OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.deepPurple
-                    )  
-                  )
-                  
-                ),
-                readOnly: true,
-                //set it true, so that user will not able to edit text
-                onTap: () async {
-                  DateTime? pickedDate = await showDatePicker(
-                      context: context,
-                      initialDate: DateTime.now(),
-                      firstDate: DateTime(1950),
-                      //DateTime.now() - not to allow to choose before today.
-                      lastDate: DateTime(2100));
-        
-                  if (pickedDate != null) {
-                    print(
-                        pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
-                    String formattedDate =
-                        DateFormat('yyyy-MM-dd').format(pickedDate);
-                    print(
-                        formattedDate); //formatted date output using intl package =>  2021-03-16
-                    setState(() {
-                      dateInput.text =
-                          formattedDate; //set output date to TextField value.
-                    });
-                  } else {}
-                },
-              ),
-             const SizedBox(height: 20,),
-              DropdownButtonFormField(
-              items: Data.map((String category) {
-         
-          return DropdownMenuItem(
-              value: category,
-              child: Row(
-                children: <Widget>[
-                  Text(category),
-                ],
-              ));
-              }).toList(),
-              onChanged: (newvalue) {
-          setState(() => priority.text = newvalue.toString());
-              },
-              decoration: InputDecoration(
-            label: Text("Select Priority"),
-          
-            border: OutlineInputBorder(
-              gapPadding: 10.0),
-            focusColor: Colors.white),
-              focusColor: Colors.white,
-            )
-            ],
-          ),
-        ),
-      ),
-      floatingActionButton: InkWell(
-        onTap: (){
-          if(_formkey.currentState!.validate())
-          {
-            print("add");
-          }
-        },
-        child: Padding(
-          padding: const EdgeInsets.only(left:30.0),
-          child: Container(
-            height: 40,width: double.infinity,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: Colors.deepPurple,
-              borderRadius: BorderRadius.all(Radius.circular(10))
+       Container(
+         alignment: Alignment.center,
+        decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+               
+                Color.fromARGB(255, 203, 232, 255),
+                 Color.fromARGB(255, 135, 201, 255),
+                Color.fromARGB(255, 255, 255, 255),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
-            child: Text("Add",style: TextStyle(color: Colors.white),),
           ),
-        ),
-      )
+         child: Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Form(
+            key: _formkey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                 Row(
+                  children: [
+                    InkWell(
+                      onTap: (){
+                        Navigator.of(context).pop();
+                      },
+                      child: const Icon(Icons.arrow_back_sharp,size: 18,)),
+                    const SizedBox(width: 90,),
+                    const Text("Add Task", style: TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 16.0,fontWeight: FontWeight.bold),),
+                  ],
+                ),
+                const SizedBox(height: 70,),
+                Container(
+                  height: 100,width: 150,decoration: const BoxDecoration(
+                    image: DecorationImage(image: AssetImage("assets/images/addTask.png"),)
+                  ),
+                ),
+                const SizedBox(height: 30,),
+                 SizedBox(
+                  height: 45,
+                   child: TextFormField(
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Text Feild Cannot Empty";
+                        }
+                        return null;
+                     },
+                     controller: taskName,
+                    style: const TextStyle(color: Colors.black, fontSize: 12.0,fontWeight: FontWeight.w400),
+                    decoration: const InputDecoration(
+                    hintText: "Enter Title",
+                    hintStyle: TextStyle(color: Colors.black, fontSize: 12.0,fontWeight: FontWeight.w400),
+                    fillColor: Colors.white,
+                    filled: true,
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.all(Radius.circular(8.0))
+                    ),
+                    prefixIcon: Icon(Icons.title, size: 16,),
+                    hoverColor: Color.fromARGB(255, 247, 247, 247),
+                    focusColor: Color.fromARGB(255, 247, 247, 247),
+                    ),
+                                 ),
+                 ),
+              const  SizedBox(height: 15,),
+                  SizedBox(
+                    height: 45,
+                    child: TextFormField(
+                  
+                     controller: description,
+                    style: const TextStyle(color: Colors.black, fontSize: 12.0,fontWeight: FontWeight.w400),
+                    decoration: const InputDecoration(
+                    hintText: "Enter Description",
+                    hintStyle: TextStyle(color: Colors.black, fontSize: 12.0,fontWeight: FontWeight.w400),
+                    fillColor: Colors.white,
+                    filled: true,
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.all(Radius.circular(8.0))
+                    ),
+                    prefixIcon: Icon(Icons.description, size: 16,),
+                    hoverColor: Color.fromARGB(255, 247, 247, 247),
+                    focusColor: Color.fromARGB(255, 247, 247, 247),
+                    ),
+                                  ),
+                  ),
+              const  SizedBox(height: 15,),
+                SizedBox(
+                  height: 45,
+                  child: TextFormField(
+                   validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Date Must be Select";
+                      }
+                      return null;
+                   },
+                    controller: dateInput,
+                    //editing controller of this TextField
+                   style: const TextStyle(color: Colors.black, fontSize: 12.0,fontWeight: FontWeight.w400),
+                      decoration: const InputDecoration(
+                      hintText: "Select Due Date",
+                      hintStyle: TextStyle(color: Colors.black, fontSize: 12.0,fontWeight: FontWeight.w400),
+                      fillColor: Colors.white,
+                      filled: true,
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.all(Radius.circular(8.0))
+                      ),
+                      prefixIcon: Icon(Icons.date_range, size: 16,),
+                      hoverColor: Color.fromARGB(255, 247, 247, 247),
+                      focusColor: Color.fromARGB(255, 247, 247, 247),
+                      ),
+                    readOnly: true,
+                    //set it true, so that user will not able to edit text
+                    onTap: () async {
+                      DateTime? pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(1950),
+                          //DateTime.now() - not to allow to choose before today.
+                          lastDate: DateTime(2100));
+                          
+                      if (pickedDate != null) {
+                        print(
+                            pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
+                        String formattedDate =
+                            DateFormat('yyyy-MM-dd').format(pickedDate);
+                        print(
+                            formattedDate); //formatted date output using intl package =>  2021-03-16
+                        setState(() {
+                          dateInput.text =
+                              formattedDate; //set output date to TextField value.
+                        });
+                      } else {}
+                    },
+                  ),
+                ),
+               const SizedBox(height: 15,),
+                SizedBox(
+                  height: 45,
+                  child: DropdownButtonFormField(
+                  
+                  items: Data.map((String category) {
+                           
+                  return DropdownMenuItem(
+                  value: category,
+                  child: Row(
+                    children: <Widget>[
+                      Text(category),
+                    ],
+                  ));
+                  }).toList(),
+                  onChanged: (newvalue) {
+                            setState(() => priority.text = newvalue.toString());
+                  },
+                      style: const TextStyle(color: Colors.black, fontSize: 12.0,fontWeight: FontWeight.w400),
+                      decoration: const InputDecoration(
+                      hintText: "Select Priority",
+                      hintStyle: TextStyle(color: Colors.black, fontSize: 12.0,fontWeight: FontWeight.w400),
+                      fillColor: Colors.white,
+                      filled: true,
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.all(Radius.circular(8.0))
+                      ),
+                      prefixIcon: Icon(Icons.priority_high, size: 16,),
+                      hoverColor: Color.fromARGB(255, 247, 247, 247),
+                      focusColor: Color.fromARGB(255, 247, 247, 247),
+                      ),
+                      focusColor: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 20,),
+                addButton(),
+                const SizedBox(height: 30,),
+              ],
+            ),
+          ),
+             ),
+       ),
+      
+    );
+  }
+   Widget addButton() {
+    return InkWell(
+      onTap: (){
+        print("Add Task");
+      },
+      child: Container(
+                  alignment: Alignment.center,
+                  height: 40,width: double.infinity,decoration: BoxDecoration(
+                    color: Colors.black,borderRadius: BorderRadius.circular(10.0)
+                  ),
+                  child: const Text("Add",style: TextStyle(color: Colors.white),),
+                ),
     );
   }
 }

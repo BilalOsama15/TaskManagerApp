@@ -11,6 +11,7 @@ class taskListing extends StatefulWidget {
 }
 
 class _taskListingState extends State<taskListing> {
+  TextEditingController _search = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,19 +38,41 @@ class _taskListingState extends State<taskListing> {
             children: [
               10.height,
               Container(
-                height: 50,width: double.infinity, alignment: Alignment.center, decoration: BoxDecoration(
-          gradient:const LinearGradient(colors: [Color.fromARGB(255, 135, 201, 255),Color.fromARGB(255, 255, 255, 255)],),
-          color: Colors.white.withOpacity(0.6),
-          image:const DecorationImage(image: AssetImage("assets/images/noise.jpg"),fit: BoxFit.cover,opacity: 0.03),
+                height: 60,width: double.infinity, alignment: Alignment.center, decoration: BoxDecoration(
+          // gradient:const LinearGradient(colors: [Color.fromARGB(255, 135, 201, 255),Color.fromARGB(255, 0, 0, 0)],),
+          // color: Colors.white.withOpacity(0.6),
+          // image:const DecorationImage(image: AssetImage("assets/images/noise.jpg"),fit: BoxFit.cover,opacity: 0.03),
           borderRadius: BorderRadius.circular(10.0)
         ),
         child: Padding(
-          padding: const EdgeInsets.all(12.0),
+          padding: const EdgeInsets.all(8.0),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text("Tasks",style: TextStyle(fontSize: 18,fontWeight: FontWeight.w600),),
-              Icon(Icons.arrow_drop_down)
+              const Text("Tasks",style: TextStyle(fontSize: 14,fontWeight: FontWeight.w600),),
+              const SizedBox(width: 10,),
+              SizedBox(
+                height: 30,width: 200,
+                child: TextFormField(
+                   controller: _search,
+                  style: const TextStyle(color: Colors.black, fontSize: 12.0,fontWeight: FontWeight.w400),
+                  decoration: const InputDecoration(
+                  hintText: "Search by title",
+                  hintStyle: TextStyle(height:1,color: Colors.black, fontSize: 12.0,fontWeight: FontWeight.w400),
+                  fillColor: Colors.white,
+                  filled: true,
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide.none,
+                    borderRadius: BorderRadius.all(Radius.circular(25.0))
+                  ),
+                  suffixIcon: Icon(Icons.search, size: 16,),
+                  hoverColor: Color.fromARGB(255, 247, 247, 247),
+                  focusColor: Color.fromARGB(255, 247, 247, 247),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10,),
+              const Icon(Icons.arrow_drop_down)
             ],
           ),
         ),
@@ -111,13 +134,28 @@ class _taskListingState extends State<taskListing> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Color.fromARGB(255, 135, 201, 255),
-        tooltip: 'Add Task',
-        onPressed: () { 
+      floatingActionButton: InkWell(
+        onTap: (){
           Navigator.push(context, MaterialPageRoute(builder: (context)=> const addTask()));
-         },
-        child: const Icon(Icons.add),
+        },
+        child: Container(
+          height: 40,width: 80,
+          decoration: const BoxDecoration(
+            color: Color.fromARGB(255, 0, 0, 0),
+            borderRadius: BorderRadius.all(Radius.circular(8.0))
+      
+          ),
+          
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Image.asset("assets/images/addPen.png",height: 25,),10.width,
+                const Text("Add", style: TextStyle(color: Colors.white, fontSize: 12.0,fontWeight: FontWeight.bold),),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
