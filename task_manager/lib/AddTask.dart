@@ -2,6 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:task_manager/Constants/loader.dart';
+import 'package:task_manager/Models/DBHelper.dart';
+import 'package:task_manager/Models/Task_model.dart';
 
 class addTask extends StatefulWidget {
   const addTask({super.key});
@@ -20,10 +23,12 @@ class _addTaskState extends State<addTask> {
     "Medium",
     "Low"
   ];
-   var _formkey=GlobalKey<FormState>();
+      DBHelper? db = DBHelper();
+   final _formkey=GlobalKey<FormState>();
   @override
   void initState() {
-    dateInput.text = "";
+    dateInput.text = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    priority.text = "Low";
     super.initState();
   }
   @override
@@ -46,167 +51,169 @@ class _addTaskState extends State<addTask> {
           ),
          child: Padding(
           padding: EdgeInsets.all(8.0),
-          child: Form(
-            key: _formkey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                 Row(
-                  children: [
-                    InkWell(
-                      onTap: (){
-                        Navigator.of(context).pop();
-                      },
-                      child: const Icon(Icons.arrow_back_sharp,size: 18,)),
-                    const SizedBox(width: 90,),
-                    const Text("Add Task", style: TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 16.0,fontWeight: FontWeight.bold),),
-                  ],
-                ),
-                const SizedBox(height: 70,),
-                Container(
-                  height: 100,width: 150,decoration: const BoxDecoration(
-                    image: DecorationImage(image: AssetImage("assets/images/addTask.png"),)
+          child: SingleChildScrollView(
+            child: Form(
+              key: _formkey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                   Row(
+                    children: [
+                      InkWell(
+                        onTap: (){
+                          Navigator.of(context).pop();
+                        },
+                        child: const Icon(Icons.arrow_back_sharp,size: 20,)),
+                      const SizedBox(width: 120,),
+                      const Text("Add Task", style: TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 16.0,fontWeight: FontWeight.bold),),
+                    ],
                   ),
-                ),
-                const SizedBox(height: 30,),
-                 SizedBox(
-                  height: 45,
-                   child: TextFormField(
-                      validator: (value) {
+                  const SizedBox(height: 150,),
+                  Container(
+                    height: 100,width: 150,decoration: const BoxDecoration(
+                      image: DecorationImage(image: AssetImage("assets/images/addTask.png"),)
+                    ),
+                  ),
+                  const SizedBox(height: 30,),
+                   SizedBox(
+                    height: 50,
+                     child: TextFormField(
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Text Feild Cannot Empty";
+                          }
+                          return null;
+                       },
+                       controller: taskName,
+                      style: const TextStyle(color: Colors.black, fontSize: 12.0,fontWeight: FontWeight.w400),
+                      decoration: const InputDecoration(
+                      hintText: "Enter Title",
+                      hintStyle: TextStyle(color: Colors.black, fontSize: 12.0,fontWeight: FontWeight.w400),
+                      fillColor: Colors.white,
+                      filled: true,
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.all(Radius.circular(8.0))
+                      ),
+                      prefixIcon: Icon(Icons.title, size: 16,),
+                      hoverColor: Color.fromARGB(255, 247, 247, 247),
+                      focusColor: Color.fromARGB(255, 247, 247, 247),
+                      ),
+                                   ),
+                   ),
+                const  SizedBox(height: 15,),
+                    SizedBox(
+                      height: 50,
+                      child: TextFormField(
+                        
+                       controller: description,
+                      style: const TextStyle(color: Colors.black, fontSize: 12.0,fontWeight: FontWeight.w400),
+                      decoration: const InputDecoration(
+                        
+                      hintText: "Enter Description",
+                      hintStyle: TextStyle(color: Colors.black, fontSize: 12.0,fontWeight: FontWeight.w400),
+                      fillColor: Colors.white,
+                      filled: true,
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.all(Radius.circular(8.0))
+                      ),
+                      prefixIcon: Icon(Icons.description, size: 16,),
+                      hoverColor: Color.fromARGB(255, 247, 247, 247),
+                      focusColor: Color.fromARGB(255, 247, 247, 247),
+                      ),
+                                    ),
+                    ),
+                const  SizedBox(height: 15,),
+                  SizedBox(
+                    height: 50,
+                    child: TextFormField(
+                     validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return "Text Feild Cannot Empty";
+                          return "Date Must be Select";
                         }
                         return null;
                      },
-                     controller: taskName,
-                    style: const TextStyle(color: Colors.black, fontSize: 12.0,fontWeight: FontWeight.w400),
-                    decoration: const InputDecoration(
-                    hintText: "Enter Title",
-                    hintStyle: TextStyle(color: Colors.black, fontSize: 12.0,fontWeight: FontWeight.w400),
-                    fillColor: Colors.white,
-                    filled: true,
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide.none,
-                      borderRadius: BorderRadius.all(Radius.circular(8.0))
+                      controller: dateInput,
+                      //editing controller of this TextField
+                     style: const TextStyle(color: Colors.black, fontSize: 12.0,fontWeight: FontWeight.w400),
+                        decoration: const InputDecoration(
+                        hintText: "Select Due Date",
+                        hintStyle: TextStyle(color: Colors.black, fontSize: 12.0,fontWeight: FontWeight.w400),
+                        fillColor: Colors.white,
+                        filled: true,
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.all(Radius.circular(8.0))
+                        ),
+                        prefixIcon: Icon(Icons.date_range, size: 16,),
+                        hoverColor: Color.fromARGB(255, 247, 247, 247),
+                        focusColor: Color.fromARGB(255, 247, 247, 247),
+                        ),
+                      readOnly: true,
+                      //set it true, so that user will not able to edit text
+                      onTap: () async {
+                        DateTime? pickedDate = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime(1950),
+                            //DateTime.now() - not to allow to choose before today.
+                            lastDate: DateTime(2100));
+                            
+                        if (pickedDate != null) {
+                          print(
+                              pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
+                          String formattedDate =
+                              DateFormat('yyyy-MM-dd').format(pickedDate);
+                          print(
+                              formattedDate); //formatted date output using intl package =>  2021-03-16
+                          setState(() {
+                            dateInput.text =
+                                formattedDate; //set output date to TextField value.
+                          });
+                        } else {}
+                      },
                     ),
-                    prefixIcon: Icon(Icons.title, size: 16,),
-                    hoverColor: Color.fromARGB(255, 247, 247, 247),
-                    focusColor: Color.fromARGB(255, 247, 247, 247),
-                    ),
-                                 ),
-                 ),
-              const  SizedBox(height: 15,),
+                  ),
+                 const SizedBox(height: 15,),
                   SizedBox(
-                    height: 45,
-                    child: TextFormField(
-                  
-                     controller: description,
-                    style: const TextStyle(color: Colors.black, fontSize: 12.0,fontWeight: FontWeight.w400),
-                    decoration: const InputDecoration(
-                    hintText: "Enter Description",
-                    hintStyle: TextStyle(color: Colors.black, fontSize: 12.0,fontWeight: FontWeight.w400),
-                    fillColor: Colors.white,
-                    filled: true,
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide.none,
-                      borderRadius: BorderRadius.all(Radius.circular(8.0))
-                    ),
-                    prefixIcon: Icon(Icons.description, size: 16,),
-                    hoverColor: Color.fromARGB(255, 247, 247, 247),
-                    focusColor: Color.fromARGB(255, 247, 247, 247),
-                    ),
-                                  ),
-                  ),
-              const  SizedBox(height: 15,),
-                SizedBox(
-                  height: 45,
-                  child: TextFormField(
-                   validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Date Must be Select";
-                      }
-                      return null;
-                   },
-                    controller: dateInput,
-                    //editing controller of this TextField
-                   style: const TextStyle(color: Colors.black, fontSize: 12.0,fontWeight: FontWeight.w400),
-                      decoration: const InputDecoration(
-                      hintText: "Select Due Date",
-                      hintStyle: TextStyle(color: Colors.black, fontSize: 12.0,fontWeight: FontWeight.w400),
-                      fillColor: Colors.white,
-                      filled: true,
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.all(Radius.circular(8.0))
-                      ),
-                      prefixIcon: Icon(Icons.date_range, size: 16,),
-                      hoverColor: Color.fromARGB(255, 247, 247, 247),
-                      focusColor: Color.fromARGB(255, 247, 247, 247),
-                      ),
-                    readOnly: true,
-                    //set it true, so that user will not able to edit text
-                    onTap: () async {
-                      DateTime? pickedDate = await showDatePicker(
-                          context: context,
-                          initialDate: DateTime.now(),
-                          firstDate: DateTime(1950),
-                          //DateTime.now() - not to allow to choose before today.
-                          lastDate: DateTime(2100));
-                          
-                      if (pickedDate != null) {
-                        print(
-                            pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
-                        String formattedDate =
-                            DateFormat('yyyy-MM-dd').format(pickedDate);
-                        print(
-                            formattedDate); //formatted date output using intl package =>  2021-03-16
-                        setState(() {
-                          dateInput.text =
-                              formattedDate; //set output date to TextField value.
-                        });
-                      } else {}
+                    height: 60,
+                    child: DropdownButtonFormField(
+                    
+                    items: Data.map((String category) {
+                             
+                    return DropdownMenuItem(
+                    value: category,
+                    child: Row(
+                      children: <Widget>[
+                        Text(category),
+                      ],
+                    ));
+                    }).toList(),
+                    onChanged: (newvalue) {
+                              setState(() => priority.text = newvalue.toString());
                     },
+                        style: const TextStyle(color: Colors.black, fontSize: 12.0,fontWeight: FontWeight.w400),
+                        decoration: const InputDecoration(
+                        hintText: "Select Priority",
+                        hintStyle: TextStyle(color: Colors.black, fontSize: 12.0,fontWeight: FontWeight.w400),
+                        fillColor: Colors.white,
+                        filled: true,
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.all(Radius.circular(8.0))
+                        ),
+                        prefixIcon: Icon(Icons.priority_high, size: 16,),
+                        hoverColor: Color.fromARGB(255, 247, 247, 247),
+                        focusColor: Color.fromARGB(255, 247, 247, 247),
+                        ),
+                    ),
                   ),
-                ),
-               const SizedBox(height: 15,),
-                SizedBox(
-                  height: 45,
-                  child: DropdownButtonFormField(
-                  
-                  items: Data.map((String category) {
-                           
-                  return DropdownMenuItem(
-                  value: category,
-                  child: Row(
-                    children: <Widget>[
-                      Text(category),
-                    ],
-                  ));
-                  }).toList(),
-                  onChanged: (newvalue) {
-                            setState(() => priority.text = newvalue.toString());
-                  },
-                      style: const TextStyle(color: Colors.black, fontSize: 12.0,fontWeight: FontWeight.w400),
-                      decoration: const InputDecoration(
-                      hintText: "Select Priority",
-                      hintStyle: TextStyle(color: Colors.black, fontSize: 12.0,fontWeight: FontWeight.w400),
-                      fillColor: Colors.white,
-                      filled: true,
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.all(Radius.circular(8.0))
-                      ),
-                      prefixIcon: Icon(Icons.priority_high, size: 16,),
-                      hoverColor: Color.fromARGB(255, 247, 247, 247),
-                      focusColor: Color.fromARGB(255, 247, 247, 247),
-                      ),
-                      focusColor: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 20,),
-                addButton(),
-                const SizedBox(height: 30,),
-              ],
+                  const SizedBox(height: 20,),
+                  addButton(),
+                  const SizedBox(height: 30,),
+                ],
+              ),
             ),
           ),
              ),
@@ -217,7 +224,20 @@ class _addTaskState extends State<addTask> {
    Widget addButton() {
     return InkWell(
       onTap: (){
+        if(taskName.text=="")
+        {
+          showSnackBar(context, "Please Enter Title", Colors.red);
+        }
+        else
+        {
+          showLoader(context);
+        task t = task(taskName.text, description.text!=""?description.text:"", dateInput.text, priority.text, "pending");
+        db!.insert(t);
+        hideLoader(context);
+        showSnackBar(context, "Successfully Add", Colors.green);
         print("Add Task");
+        }
+        
       },
       child: Container(
                   alignment: Alignment.center,

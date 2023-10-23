@@ -36,7 +36,7 @@ class _taskListingState extends State<taskListing> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              10.height,
+              40.height,
               Container(
                 height: 60,width: double.infinity, alignment: Alignment.center, decoration: BoxDecoration(
           // gradient:const LinearGradient(colors: [Color.fromARGB(255, 135, 201, 255),Color.fromARGB(255, 0, 0, 0)],),
@@ -50,7 +50,7 @@ class _taskListingState extends State<taskListing> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text("Tasks",style: TextStyle(fontSize: 14,fontWeight: FontWeight.w600),),
-              const SizedBox(width: 10,),
+              const SizedBox(width: 20,),
               SizedBox(
                 height: 30,width: 200,
                 child: TextFormField(
@@ -71,13 +71,12 @@ class _taskListingState extends State<taskListing> {
                   ),
                 ),
               ),
-              const SizedBox(width: 10,),
+              const SizedBox(width: 20,),
               const Icon(Icons.arrow_drop_down)
             ],
           ),
         ),
               ),
-              20.height,
               Expanded(
                 child: ListView.builder(
                   itemCount: 10,
