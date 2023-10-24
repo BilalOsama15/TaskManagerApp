@@ -6,8 +6,10 @@ import 'package:task_manager/Constants/loader.dart';
 import 'package:task_manager/Models/DBHelper.dart';
 import 'package:task_manager/Models/Task_model.dart';
 
+// ignore: must_be_immutable
 class addTask extends StatefulWidget {
-  const addTask({super.key});
+  task? t;
+   addTask({super.key, required this.t});
 
   @override
   State<addTask> createState() => _addTaskState();
@@ -27,9 +29,23 @@ class _addTaskState extends State<addTask> {
    final _formkey=GlobalKey<FormState>();
   @override
   void initState() {
-    dateInput.text = DateFormat('yyyy-MM-dd').format(DateTime.now());
-    priority.text = "Low";
     super.initState();
+    setDefaultValue();
+  }
+
+  setDefaultValue(){
+    if(widget.t != null)
+    {
+      taskName.text = widget.t!.title.toString();
+      description.text =  widget.t!.description.toString();
+      dateInput.text =  widget.t!.dueDate.toString();
+      priority.text =  widget.t!.priority.toString();
+    }
+    else
+    {
+      dateInput.text = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    priority.text = "Low";
+    }
   }
   @override
   Widget build(BuildContext context) {
@@ -65,7 +81,7 @@ class _addTaskState extends State<addTask> {
                         },
                         child: const Icon(Icons.arrow_back_sharp,size: 20,)),
                       const SizedBox(width: 120,),
-                      const Text("Add Task", style: TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 16.0,fontWeight: FontWeight.bold),),
+                       Text(widget.t != null?"Update Task":"Add Task", style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 16.0,fontWeight: FontWeight.bold),),
                     ],
                   ),
                   const SizedBox(height: 150,),
@@ -179,7 +195,7 @@ class _addTaskState extends State<addTask> {
                   SizedBox(
                     height: 60,
                     child: DropdownButtonFormField(
-                    
+                    value: widget.t!=null?widget.t!.priority:"Low",
                     items: Data.map((String category) {
                              
                     return DropdownMenuItem(
@@ -232,10 +248,24 @@ class _addTaskState extends State<addTask> {
         {
           showLoader(context);
         task t = task(taskName.text, description.text!=""?description.text:"", dateInput.text, priority.text, "pending");
-        db!.insert(t);
-        hideLoader(context);
+        if(widget.t!=null)
+        {
+          print("update");
+          db!.updateTask(t,widget.t!.id!.toInt());
+           hideLoader(context);
+        showSnackBar(context, "Successfully Update", Colors.green);
+        }
+        else
+        {
+          db!.insert(t);
+           hideLoader(context);
         showSnackBar(context, "Successfully Add", Colors.green);
+        }
+        
+       
         print("Add Task");
+        Navigator.of(context).pop("Data added successfully");
+
         }
         
       },
@@ -244,7 +274,7 @@ class _addTaskState extends State<addTask> {
                   height: 40,width: double.infinity,decoration: BoxDecoration(
                     color: Colors.black,borderRadius: BorderRadius.circular(10.0)
                   ),
-                  child: const Text("Add",style: TextStyle(color: Colors.white),),
+                  child: Text(widget.t!=null?"Update":"Add",style: const TextStyle(color: Colors.white),),
                 ),
     );
   }

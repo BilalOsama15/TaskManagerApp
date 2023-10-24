@@ -12,7 +12,7 @@ class DBHelper {
     }
 
     _db = await initDatabase();
-    return null;
+    return _db;
   }
 
   initDatabase()async{
@@ -34,14 +34,33 @@ class DBHelper {
      print(task.status);
      
   }
-
- Future<List<task>?> gettask() async {
-  try {
+Future<List<task>?> getAllTask() async {
+ try {
     var dbClient = await db;
-    final List<Map<String, dynamic>> queryResult = await dbClient!.query('tasks');
+    if (dbClient == null) {
+      print("akjshd");
+      // Handle the case where dbClient is null (e.g., database not properly initialized)
+      return null;
+    }
+    final List<Map<String, dynamic>> queryResult = await dbClient.query('tasks');
     return queryResult.map((e) => task.fromMap(e)).toList();
   } catch (e) {
-    print('Error while fetching employee data: $e');
+    print('Error while fetching tasks data: $e');
+    return null;
+  }
+}
+ Future<List<task>?> getTaskByStatus(String status) async {
+ try {
+    var dbClient = await db;
+    if (dbClient == null) {
+      print("Database not properly initialized");
+      return null;
+    }
+    final List<Map<String, dynamic>> queryResult =
+        await dbClient.query('tasks', where: 'status = ?', whereArgs: [status]);
+    return queryResult.map((e) => task.fromMap(e)).toList();
+  } catch (e) {
+    print('Error while fetching tasks data: $e');
     return null;
   }
 }
@@ -68,5 +87,27 @@ class DBHelper {
         where: 'id = ?',
         whereArgs: [id]
     );
+  }
+   Future<int> updateStatus(bool newStatus, int id)async{
+    try {
+    var dbClient = await db;
+    if (dbClient == null) {
+      return 0; // Handle the case where dbClient is null
+    }
+
+    final Map<String, dynamic> updateData = {
+      'status': newStatus ? 'completed' : 'pending',
+    };
+
+    return await dbClient.update(
+      'tasks',
+      updateData,
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  } catch (e) {
+    print('Error while updating task status: $e');
+    return 0; // Handle the error case
+  }
   }
 }

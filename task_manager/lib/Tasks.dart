@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:task_manager/AddTask.dart';
+import 'package:task_manager/Models/DBHelper.dart';
+import 'package:task_manager/Models/Task_model.dart';
 
 class taskListing extends StatefulWidget {
   const taskListing({super.key});
@@ -11,7 +13,27 @@ class taskListing extends StatefulWidget {
 }
 
 class _taskListingState extends State<taskListing> {
-  TextEditingController _search = TextEditingController();
+  final TextEditingController _search = TextEditingController();
+    String _searchText="";
+    DBHelper? db = DBHelper();
+ Future<List<task>?>? tasks;
+
+void asd()async{
+    tasks = getList();
+    await Future.delayed(const Duration(seconds: 2));
+    setState(() {
+    });
+}
+ Future<List<task>?> getList() async {
+    return await db!.getTaskByStatus("pending");
+  }
+  @override
+  void initState() {
+    super.initState();
+    asd();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,12 +71,17 @@ class _taskListingState extends State<taskListing> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text("Tasks",style: TextStyle(fontSize: 14,fontWeight: FontWeight.w600),),
+              const Text("Tasks",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w600),),
               const SizedBox(width: 20,),
               SizedBox(
-                height: 30,width: 200,
+                height: 40,width: 220,
                 child: TextFormField(
                    controller: _search,
+                      onChanged: (value) {
+                      setState(() {
+                        _searchText = value;
+                      });
+                  },
                   style: const TextStyle(color: Colors.black, fontSize: 12.0,fontWeight: FontWeight.w400),
                   decoration: const InputDecoration(
                   hintText: "Search by title",
@@ -72,70 +99,126 @@ class _taskListingState extends State<taskListing> {
                 ),
               ),
               const SizedBox(width: 20,),
-              const Icon(Icons.arrow_drop_down)
+              const Icon(Icons.arrow_drop_down,size: 22,)
             ],
           ),
         ),
               ),
               Expanded(
-                child: ListView.builder(
-                  itemCount: 10,
-                  itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      height: 50,
-                      decoration: BoxDecoration(
-                        // boxShadow: const [
-                        //   BoxShadow(
-                        //   color: Color.fromARGB(255, 0, 0, 0),
-                        //   offset: Offset(4,4),
-                        //   )
-                        // ],
-                        borderRadius: BorderRadius.circular(15),
-                        color: Color.fromARGB(255, 255, 255, 255)
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text("Task ${index+1}",style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold),),
-                                Text("Due Date: 09/12/2023",style: TextStyle(fontSize: 10,fontWeight: FontWeight.normal)),
-                              ],
+                child: FutureBuilder(
+                   future: tasks,
+                    builder: ((context,AsyncSnapshot<List<task>?> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (snapshot.hasError) {
+                        return Center(child: Text('Error: ${snapshot.error}'));
+                      } else if (!snapshot.hasData) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (snapshot.data!.isEmpty) {
+                        return const Center(child: Text("No Task Found",style: TextStyle(color: Color.fromARGB(132, 0, 0, 0)),));
+                      }
+                      
+                      else
+                      {
+                        if(_searchText=="")
+                        {
+                          final filteredList = snapshot.data;
+                        }
+                        final filteredList = snapshot.data!.where((task) =>
+                          task.title!.toLowerCase().contains(_searchText.toLowerCase())
+                        ).toList();
+                        return ListView.builder(
+                        itemCount: filteredList.length,
+                        itemBuilder: (context, index) {
+                           task t =filteredList[index];
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: InkWell(
+                            onTap: ()async{
+                              String? result =await  Navigator.push(context, MaterialPageRoute(builder: (context)=> addTask(t: t,)));
+                                if(result !=null)
+                                {
+                                  setState(() {
+                                    asd();
+                                  });
+                                }
+                            },
+                            child: Container(
+                            height: 50,
+                            decoration: BoxDecoration(
+                              // boxShadow: const [
+                              //   BoxShadow(
+                              //   color: Color.fromARGB(255, 0, 0, 0),
+                              //   offset: Offset(4,4),
+                              //   )
+                              // ],
+                              borderRadius: BorderRadius.circular(15),
+                              color: Color.fromARGB(255, 255, 255, 255)
                             ),
-                           Container(
-                            alignment: Alignment.center,
-                            height: 15,width: 50,decoration: BoxDecoration(
-                              color: Colors.red,
-                              borderRadius: BorderRadius.circular(25.0)
+                            child: Padding(
+                              padding: const EdgeInsets.only(top:8.0,left: 16.0,right:8.0,bottom: 8.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Checkbox(value: t.status=="pending"?false:true, onChanged: (value) {
+                                    print(value);
+                                    setState(() {
+                                      db!.updateStatus(value!, t.id!);
+                                      asd();
+                                    });
+                                  },),
+                                  10.width,
+                                  SizedBox(
+                                    width: 180,
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text("${t.title}",style:const TextStyle(fontSize: 14,fontWeight: FontWeight.bold),),
+                                        Text("${t.dueDate}",style:const TextStyle(fontSize: 10,fontWeight: FontWeight.normal)),
+                                      ],
+                                    ),
+                                  ),
+                                  10.width,
+                                Container(
+                                  alignment: Alignment.center,
+                                  height: 20,width: 50,decoration: BoxDecoration(
+                                    color: t.priority=="High"?Colors.red:t.priority=="Medium"?Colors.amber: Color.fromARGB(255, 254, 223, 128),
+                                    borderRadius: BorderRadius.circular(25.0)
+                                  ),
+                                  child: Text("${t.priority}",style: const TextStyle(fontSize: 10,fontWeight: FontWeight.bold,color: Colors.white),),
+                                )
+                                ],
+                              ),
                             ),
-                            child: Text("High",style: TextStyle(fontSize: 8,fontWeight: FontWeight.bold,color: Colors.white),),
-                           )
-                          ],
-                        ),
-                      ),
-                      // child: ListTile(
-                      //   title: Text("Task ${index+1}",style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold),),
-                      //   subtitle: Text("Due Date: 09/12/2023",style: TextStyle(fontSize: 10,fontWeight: FontWeight.normal)),
-                      //   trailing: Icon(Icons.access_time_filled,size: 16,),
-                      // ),
-                    ),
-                  );
-                
-                  
-                },))
+                            // child: ListTile(
+                            //   title: Text("Task ${index+1}",style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold),),
+                            //   subtitle: Text("Due Date: 09/12/2023",style: TextStyle(fontSize: 10,fontWeight: FontWeight.normal)),
+                            //   trailing: Icon(Icons.access_time_filled,size: 16,),
+                            // ),
+                                                  ),
+                          ),
+                      );
+                    
+                      
+                    },);
+                              
+  }})))
             ],
           ),
         ),
       ),
       floatingActionButton: InkWell(
-        onTap: (){
-          Navigator.push(context, MaterialPageRoute(builder: (context)=> const addTask()));
+        onTap: ()async{
+          task? t= null;
+        String? result =await  Navigator.push(context, MaterialPageRoute(builder: (context)=> addTask(t: t,)));
+        if(result !=null)
+        {
+          setState(() {
+            asd();
+          });
+        }
+        
         },
         child: Container(
           height: 40,width: 80,
