@@ -2,9 +2,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:task_manager/Constants/loader.dart';
 import 'package:task_manager/Models/DBHelper.dart';
 import 'package:task_manager/Models/Task_model.dart';
+import 'package:task_manager/Models/localNotifications.dart';
 
 // ignore: must_be_immutable
 class addTask extends StatefulWidget {
@@ -16,6 +18,7 @@ class addTask extends StatefulWidget {
 }
 
 class _addTaskState extends State<addTask> {
+  late final LocalNotificationServices services;
   TextEditingController dateInput = TextEditingController();
    TextEditingController taskName = TextEditingController();
     TextEditingController description= TextEditingController();
@@ -29,6 +32,8 @@ class _addTaskState extends State<addTask> {
    final _formkey=GlobalKey<FormState>();
   @override
   void initState() {
+    services = LocalNotificationServices();
+    services.intialize();
     super.initState();
     setDefaultValue();
   }
@@ -239,7 +244,7 @@ class _addTaskState extends State<addTask> {
   }
    Widget addButton() {
     return InkWell(
-      onTap: (){
+      onTap: () async {
         if(taskName.text=="")
         {
           showSnackBar(context, "Please Enter Title", Colors.red);
@@ -253,16 +258,21 @@ class _addTaskState extends State<addTask> {
           print("update");
           db!.updateTask(t,widget.t!.id!.toInt());
            hideLoader(context);
+            await services.showNotification(id: widget.t!.id!.toInt(),title: "Task Updated", body: "Task Name can be ${t.title}");
         showSnackBar(context, "Successfully Update", Colors.green);
         }
         else
         {
-          db!.insert(t);
+       int id =  await db!.insert(t);
            hideLoader(context);
+          await services.showNotification(id: id,title: "New Task Add", body: "Task Name can be ${t.title}");
+          await requestExactAlarmPermission(id, t.title.toString(),dateInput.text);
+          // await services.showSchedulenotification(id: id,title: "New Task Add", body: "Task Name can be ${t.title}",dueDate:dateInput.text );
+
         showSnackBar(context, "Successfully Add", Colors.green);
         }
         
-       
+
         print("Add Task");
         Navigator.of(context).pop("Data added successfully");
 
@@ -278,4 +288,14 @@ class _addTaskState extends State<addTask> {
                 ),
     );
   }
+  Future<void> requestExactAlarmPermission(int id, String title, String dueDate) async {
+  var status = await Permission.manageExternalStorage.request();
+  if (status.isGranted) {
+     await services.showSchedulenotification(id: id,title: "New Task Add", body: "Task Name can be ${title}",dueDate:dueDate );
+    // Permission granted, you can proceed with scheduling notifications.
+  } else {
+    print("Not Granted");
+    // Permission denied or not granted, handle this case as needed.
+  }
+}
 }

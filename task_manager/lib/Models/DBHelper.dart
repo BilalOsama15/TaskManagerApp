@@ -27,11 +27,11 @@ class DBHelper {
     await db.execute('CREATE TABLE tasks (id INTEGER PRIMARY KEY AUTOINCREMENT,title TEXT, description TEXT,dueDate TEXT,priority TEXT,status TEXT)');
   }
 
-    insert(task task)async{
+   insert(task task)async{
    // print(cart.toMap());
     var dbClient = await db ;
-     await dbClient!.insert('tasks', task.toMap());
-     print(task.status);
+    final id = await dbClient!.insert('tasks', task.toMap());
+    return id;
      
   }
 Future<List<task>?> getAllTask() async {

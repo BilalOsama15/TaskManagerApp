@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:task_manager/AddTask.dart';
 import 'package:task_manager/Models/DBHelper.dart';
 import 'package:task_manager/Models/Task_model.dart';
+import 'package:task_manager/Models/localNotifications.dart';
 
 class taskListing extends StatefulWidget {
   const taskListing({super.key});
@@ -13,6 +14,7 @@ class taskListing extends StatefulWidget {
 }
 
 class _taskListingState extends State<taskListing> {
+late final LocalNotificationServices services;
   final TextEditingController _search = TextEditingController();
     String _searchText="";
     DBHelper? db = DBHelper();
@@ -37,6 +39,8 @@ void asd(String status)async{
   }
   @override
   void initState() {
+    services = LocalNotificationServices();
+    services.intialize();
     super.initState();
     asd(status);
   }
@@ -88,7 +92,7 @@ void asd(String status)async{
                 height: 40,width: 200 ,
                 child: TextFormField(
                    controller: _search,
-                      onChanged: (value) {
+                      onChanged: (value) async {
                       setState(() {
                         _searchText = value;
                       });
@@ -197,12 +201,13 @@ void asd(String status)async{
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Checkbox(value: t.status=="pending"?false:true, onChanged: (value) {
+                                  Checkbox(value: t.status=="pending"?false:true, onChanged: (value) async {
                                     print(value);
                                     setState(() {
                                       db!.updateStatus(value!, t.id!);
                                       asd(status);
                                     });
+                                   await services.showNotification(id: t.id!.toInt(),title: "Task Status Updated", body: value!?"Task Is Completed":"Task Is Pending");
                                   },),
                                   10.width,
                                   SizedBox(
