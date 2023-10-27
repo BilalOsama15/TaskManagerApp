@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:task_manager/Login.dart';
+import 'package:task_manager/Tasks.dart';
 
 void main() {
   runApp(const MyApp());
@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
        
       ),
       debugShowCheckedModeBanner: false,
-      home: const Login(),
+      home: const taskListing(),
     );
   }
 }

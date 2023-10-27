@@ -18,22 +18,33 @@ class _taskListingState extends State<taskListing> {
     DBHelper? db = DBHelper();
  Future<List<task>?>? tasks;
 
-void asd()async{
-    tasks = getList();
+void asd(String status)async{
+    tasks = getList(status);
     await Future.delayed(const Duration(seconds: 2));
     setState(() {
     });
 }
- Future<List<task>?> getList() async {
-    return await db!.getTaskByStatus("pending");
+ Future<List<task>?> getList(String status) async {
+    if(status=="all")
+    {
+      return await db!.getAllTask();
+    }
+    else
+    {
+      return await db!.getTaskByStatus(status);
+    }
+   
   }
   @override
   void initState() {
     super.initState();
-    asd();
+    asd(status);
   }
-
-
+ var data = [
+      "pending",
+      "completed",  
+    ];
+    String status = 'pending';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,7 +85,7 @@ void asd()async{
               const Text("Tasks",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w600),),
               const SizedBox(width: 20,),
               SizedBox(
-                height: 40,width: 220,
+                height: 40,width: 200 ,
                 child: TextFormField(
                    controller: _search,
                       onChanged: (value) {
@@ -98,8 +109,34 @@ void asd()async{
                   ),
                 ),
               ),
-              const SizedBox(width: 20,),
-              const Icon(Icons.arrow_drop_down,size: 22,)
+              const SizedBox(width: 10,),
+              PopupMenuButton(
+                iconSize: 22.0,
+          onSelected: (value) {
+            
+           
+             if(value==data[0])
+            {
+              status = data[0];
+              setState(() {
+                asd(status);
+              });
+            }
+            else if(value==data[1])
+            {
+              status = data[1];
+              setState(() {
+                asd(status);
+              });
+            }
+          },
+          itemBuilder: (context)=>[
+          PopupMenuItem(value: data[0],child: const Text("Pending")),
+          PopupMenuItem(value: data[1],child: const Text("Completed")),
+          
+        ]),
+
+              // const Icon(Icons.arrow_drop_down,size: 22,)
             ],
           ),
         ),
@@ -139,7 +176,7 @@ void asd()async{
                                 if(result !=null)
                                 {
                                   setState(() {
-                                    asd();
+                                    asd(status);
                                   });
                                 }
                             },
@@ -164,7 +201,7 @@ void asd()async{
                                     print(value);
                                     setState(() {
                                       db!.updateStatus(value!, t.id!);
-                                      asd();
+                                      asd(status);
                                     });
                                   },),
                                   10.width,
@@ -215,7 +252,7 @@ void asd()async{
         if(result !=null)
         {
           setState(() {
-            asd();
+            asd(status);
           });
         }
         
