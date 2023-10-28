@@ -63,21 +63,24 @@ Future<void> showSchedulenotification({
   // Get the local time zone
   final local = tz.local;
 
+
 final parsedDueDate = DateTime.parse(dueDate);
   // Calculate the time before the due date when the notification should be shown (e.g., 1 hour before)
   var notificationTime = parsedDueDate.subtract(const Duration(hours: 1));
    // Check if the calculated notificationTime is in the future
   if (notificationTime.isBefore(DateTime.now())) {
     // If it's not in the future, set it to a future time (e.g., 1 minute from now)
-    notificationTime = DateTime.now().add(const Duration(minutes: 1));
+    notificationTime = DateTime.now().add(const Duration(seconds: 3));
+    print(notificationTime);
   }
+  
   await _localNotificationService.zonedSchedule(
     id, // Unique ID for this notification
     title,
     body,
     tz.TZDateTime.from(notificationTime, local), // Convert to the local time zone
     _details,
-    androidAllowWhileIdle: true,
+    androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
     uiLocalNotificationDateInterpretation:
         UILocalNotificationDateInterpretation.absoluteTime,
   );

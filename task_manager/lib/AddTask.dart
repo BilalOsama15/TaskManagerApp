@@ -266,8 +266,8 @@ class _addTaskState extends State<addTask> {
        int id =  await db!.insert(t);
            hideLoader(context);
           await services.showNotification(id: id,title: "New Task Add", body: "Task Name can be ${t.title}");
-          await requestExactAlarmPermission(id, t.title.toString(),dateInput.text);
-          // await services.showSchedulenotification(id: id,title: "New Task Add", body: "Task Name can be ${t.title}",dueDate:dateInput.text );
+          // await requestExactAlarmPermission(id, t.title.toString(),dateInput.text);
+          await services.showSchedulenotification(id: id,title: "Task Reminder", body: "Task Name can be ${t.title}",dueDate:dateInput.text );
 
         showSnackBar(context, "Successfully Add", Colors.green);
         }
@@ -291,11 +291,23 @@ class _addTaskState extends State<addTask> {
   Future<void> requestExactAlarmPermission(int id, String title, String dueDate) async {
   var status = await Permission.manageExternalStorage.request();
   if (status.isGranted) {
-     await services.showSchedulenotification(id: id,title: "New Task Add", body: "Task Name can be ${title}",dueDate:dueDate );
+    print(status);
+    await services.showSchedulenotification(id: id, title: "Task Reminder", body: "Task Name can be $title", dueDate: dueDate);
     // Permission granted, you can proceed with scheduling notifications.
   } else {
-    print("Not Granted");
+    print(status);
     // Permission denied or not granted, handle this case as needed.
   }
 }
+//   Future<void> requestExactAlarmPermission(int id, String title, String dueDate) async {
+//   var status = await Permission.manageExternalStorage.request();
+//   if (status.isGranted) {
+//     print(status);
+//      await services.showSchedulenotification(id: 012,title: "Task Reminder", body: "Task Name can be ${title}",dueDate:dueDate );
+//     // Permission granted, you can proceed with scheduling notifications.
+//   } else {
+//     print(status);
+//     // Permission denied or not granted, handle this case as needed.
+//   }
+// }
 }

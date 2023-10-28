@@ -172,6 +172,8 @@ void asd(String status)async{
                         itemCount: filteredList.length,
                         itemBuilder: (context, index) {
                            task t =filteredList[index];
+                          DateTime date = DateTime.parse(t.dueDate.toString());
+                          
                         return Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: InkWell(
@@ -217,7 +219,7 @@ void asd(String status)async{
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text("${t.title}",style:const TextStyle(fontSize: 14,fontWeight: FontWeight.bold),),
-                                        Text("${t.dueDate}",style:const TextStyle(fontSize: 10,fontWeight: FontWeight.normal)),
+                                        Text("${t.dueDate}",style: TextStyle(fontSize: 10,fontWeight: FontWeight.normal,color: date.isBefore(DateTime.now())?Colors.red:Colors.black)),
                                       ],
                                     ),
                                   ),
