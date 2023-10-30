@@ -1,2 +1,2 @@
 # TaskManagerApp
-To manage Task using Firebase
+Manage Task Using Local Database
