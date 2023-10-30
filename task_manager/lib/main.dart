@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:task_manager/Tasks.dart';
+import 'package:task_manager/SplashScreen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
        
       ),
       debugShowCheckedModeBanner: false,
-      home: const taskListing(),
+      home: const SplashScreen(),
     );
   }
 }
